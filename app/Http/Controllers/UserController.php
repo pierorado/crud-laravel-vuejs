@@ -1,17 +1,17 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Estudiante;
+use App\Models\User;
 use Illuminate\Http\Request;
-
-class EstudiantesController extends Controller
+use Illuminate\Support\Facades\Hash;
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Estudiante::all();
+        return User::all();
     }
 
     /**
@@ -20,10 +20,11 @@ class EstudiantesController extends Controller
     public function store(Request $request)
     {
         $input = $request->input();
-        $e = Estudiante::create($input);
+        $input["password"] = Hash::make(trim($request->password));
+        $e = User::create($input);
         return response()->json([
             'data'=>$e,
-            'mensaje'=>"Estudiantes actualizados con éxito.",
+            'mensaje'=>"Registrado con éxito.",
         ]);
     }
 
@@ -32,19 +33,18 @@ class EstudiantesController extends Controller
      */
     public function show(string $id)
     {
-        $e = Estudiante::find($id);
+        $e = User::find($id);
         if (isset($e)) {
             return response()->json([
                 'data'=>$e,
-                'mensaje'=>"Estudiantes encontrado con éxito.",
+                'mensaje'=>"usuario encontrado con éxito.",
             ]);
         }else {
             return response()->json([
                 'error'=>true,
-                'mensaje'=>"No se encontro el estudiantes",
+                'mensaje'=>"No se encontro el usuario",
             ]);
         }
-        
     }
 
     /**
@@ -52,20 +52,20 @@ class EstudiantesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $e = Estudiante::find($id);
+        $e = User::find($id);
         if(isset($e)){
-            $e->nombre = $request->nombre;
-            $e->apellido = $request->apellido;
-            $e->foto = $request->foto;
+            $e->name = $request->name;
+            $e->email = $request->email;
+            $e->password= Hash::make($request->password);
             if ($e->save()) {
                 return response()->json([
                     'data'=>$e,
-                    'mensaje'=>"Estudiantes actualizados con éxito.",
+                    'mensaje'=>"Actualizados con éxito.",
                 ]);
             }else {
                 return response()->json([
                     'error'=>true,
-                    'mensaje'=>"No se actualizo estudiantes",
+                    'mensaje'=>"No se actualizo ",
                 ]);
             }
         }else {
@@ -81,25 +81,25 @@ class EstudiantesController extends Controller
      */
     public function destroy(string $id)
     {
-        $e = Estudiante::find($id);
+        $e = User::find($id);
         if (isset($e)) {
-            $res = Estudiante::destroy($id);
+            $res = User::destroy($id);
             if ($res) {
                 return response()->json([
                     'data'=>$e,
-                    'mensaje'=>"Estudiantes eliminado con éxito.",
+                    'mensaje'=>" eliminado con éxito.",
                 ]);
             }else {
                 return response()->json([
                     'data'=>$e,
-                    'mensaje'=>"Estudiantes no éxiten.",
+                    'mensaje'=>" no éxite.",
                 ]);    
             }
             
         }else {
             return response()->json([
                 'error'=>true,
-                'mensaje'=>"No se encontro el estudiantes",
+                'mensaje'=>"No se encontro el usuario",
             ]);
         }
     }
